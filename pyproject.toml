@@ -14,5 +14,11 @@ line-length = 100
 [tool.ruff.lint]
 extend-select = ["I"]
 
-[tool.pytest.ini.options]
-markers = ["requires_model: loads the active profile's model and SAE, downloading them on first run]
+[tool.pytest.ini_options]
+markers = ["requires_model: loads the active profile's model and SAE, downloading them on first run"]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.10",
+]
