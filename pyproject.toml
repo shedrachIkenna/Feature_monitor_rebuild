@@ -3,6 +3,7 @@ name = "feature-monitor-rebuild"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+    "pyyaml>=6.0.3",
     "sae-lens>=6.54.0",
     "torch>=2.14.1",
     "transformer-lens>=3.9.0",
