@@ -34,7 +34,7 @@ class Profile:
         return f"{self.model_name.split("/")[-1]}_{self.layer}"
 
 
-def load_profile(path: Path = PROFILE_PATH) -> dict[str, Profile]:
+def load_profiles(path: Path = PROFILE_PATH) -> dict[str, Profile]:
     """Read every profile. Unknown or missing keys raises TypeError; bad dtype raises ValueError"""
     raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     profiles = {name: Profile(name=name, **fields) for name, fields in raw.items()}

@@ -1,7 +1,7 @@
 import pytest 
 from sae_lens.loading.pretrained_saes_directory import get_pretrained_saes_directory
 
-from monitor.model import PROFILE_ENV, active_profile, load_profile
+from monitor.model import PROFILE_ENV, active_profile, load_profiles
 
 def test_default_profile_is_gpt2_small(monkeypatch) -> None:
     monkeypatch.delenv(PROFILE_ENV, raising=False)
@@ -18,3 +18,23 @@ def test_unknown_profile_is_refused(monkeypatch) -> None:
     monkeypatch.setenv(PROFILE_ENV, "gpt5")
     with pytest.raises(ValueError, match="gpt2_small"):
         active_profile() 
+
+def test_bad_dtype_and_unknown_keys_are_refused(tmp_path) -> None:
+    path = tmp_path / "profiles.yaml"
+    fields = {
+        "label": "x",
+        "model_name": "m",
+        "dtype": "float16",
+        "process_weights": True,
+        "sae_release": "r",
+        "sae_id": "i",
+        "layer": 1,
+        "neuronpedia_id": "m/1",
+    }
+    path.write_text("p:\n" + "".join(f"  {k}: {v}\n" for k, v in fields.items()))
+    with pytest.raises(ValueError, match="dtype"):
+        load_profiles(path)
+    path.write_text(path.read_text() + "  extra: 1\n")
+    with pytest.raises(TypeError):
+        load_profiles(path)
+
