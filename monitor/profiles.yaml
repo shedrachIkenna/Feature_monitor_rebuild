@@ -14,7 +14,7 @@ gpt2_small:
   neuronpedia_id: gpt2-small/8-res-jb   # used for finding feature label names for the features gotten by SAEs
 
 
-# Layer 16 for Gemma is used because its output comes from 17 out of 27 blocks 
+# Layer 16 for Gemma is used because its output comes from 17 out of 26 blocks 
 # which is roughly 65% and it is the closest match to GPT-2's input to
 # block 8 (8 of 12, 67%), so the two profiles read at about the same relative depth.
 

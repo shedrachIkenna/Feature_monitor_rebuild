@@ -1,23 +1,27 @@
-import pytest 
+import pytest
 from sae_lens.loading.pretrained_saes_directory import get_pretrained_saes_directory
 
 from monitor.model import PROFILE_ENV, active_profile, load_profiles
+
 
 def test_default_profile_is_gpt2_small(monkeypatch) -> None:
     monkeypatch.delenv(PROFILE_ENV, raising=False)
     assert active_profile().name == "gpt2_small"
 
-def environment_variable_selects_the_profile(monkeypatch) -> None: 
+
+def test_environment_variable_selects_the_profile(monkeypatch) -> None:
     monkeypatch.setenv(PROFILE_ENV, "gemma2_2b")
-    profile = active_profile() 
+    profile = active_profile()
     assert profile.model_name == "google/gemma-2-2b"
     assert profile.dtype == "bfloat16"
     assert profile.process_weights is False
 
-def test_unknown_profile_is_refused(monkeypatch) -> None: 
+
+def test_unknown_profile_is_refused(monkeypatch) -> None:
     monkeypatch.setenv(PROFILE_ENV, "gpt5")
     with pytest.raises(ValueError, match="gpt2_small"):
-        active_profile() 
+        active_profile()
+
 
 def test_bad_dtype_and_unknown_keys_are_refused(tmp_path) -> None:
     path = tmp_path / "profiles.yaml"
@@ -38,9 +42,15 @@ def test_bad_dtype_and_unknown_keys_are_refused(tmp_path) -> None:
     with pytest.raises(TypeError):
         load_profiles(path)
 
+
 @pytest.mark.parametrize("profile", load_profiles().values(), ids=lambda p: p.name)
 def test_profile_matches_the_installed_sae_lens_registry(profile) -> None:
     release = get_pretrained_saes_directory()[profile.sae_release]
     assert profile.sae_id in release.saes_map
     assert release.neuronpedia_id[profile.sae_id] == profile.neuronpedia_id
 
+
+def test_file_stems_keep_profiles_apart() -> None:
+    profiles = load_profiles()
+    assert profiles["gpt2_small"].file_stem == "gpt2_8"  # baseline model name
+    assert profiles["gemma2_2b"].file_stem == "gemma-2-2b_16"
