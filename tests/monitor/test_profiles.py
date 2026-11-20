@@ -7,3 +7,9 @@ def test_default_profile_is_gpt2_small(monkeypatch) -> None:
     monkeypatch.delenv(PROFILE_ENV, raising=False)
     assert active_profile().name == "gpt2_small"
 
+def environment_variable_selects_the_profile(monkeypatch) -> None: 
+    monkeypatch.setenv(PROFILE_ENV, "gemma2_2b")
+    profile = active_profile() 
+    assert profile.model_name == "google/gemma-2-2b"
+    assert profile.dtype == "bfloat16"
+    assert profile.process_weights is False
