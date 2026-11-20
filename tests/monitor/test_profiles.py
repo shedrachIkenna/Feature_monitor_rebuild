@@ -38,3 +38,9 @@ def test_bad_dtype_and_unknown_keys_are_refused(tmp_path) -> None:
     with pytest.raises(TypeError):
         load_profiles(path)
 
+@pytest.mark.parametrize("profile", load_profiles().values(), ids=lambda p: p.name)
+def test_profile_matches_the_installed_sae_lens_registry(profile) -> None:
+    release = get_pretrained_saes_directory()[profile.sae_release]
+    assert profile.sae_id in release.saes_map
+    assert release.neuronpedia_id[profile.sae_id] == profile.neuronpedia_id
+
